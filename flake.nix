@@ -50,11 +50,15 @@
             '';
           };
           boardMkDerivationOptions = {
-            esp32.ESP32_GENERIC_C3 = opts: args:
+            esp32.ESP32_GENERIC_C3 = opts: {
+              frozenManifestText ? "",
+              userCModules ? pkgs.writeTextDir "micropython.cmake" "",
+              ...
+            }:
             let
               frozenManifest = pkgs.writeText "manifest.py" ''
                 include("${micropython-src}/ports/esp32/boards/manifest.py")
-                ${args.frozenManifestText}
+                ${frozenManifestText}
               '';
             in opts // {
               name = "esp32_generic_c3";
@@ -64,6 +68,12 @@
 
                 rmdir lib/berkeley-db-1.xx
                 ln -s ${berkeley-db-1_xx-src} lib/berkeley-db-1.xx # Required by stdlib
+
+                # Included C modules must be copied in.  Referencing them
+                # directly in the Store (or even symlinking them in) will leave
+                # stray Store paths in the output binary, which is illegal for
+                # fixed-output derivations.
+                cp -r ${userCModules} lib/user_c_modules
 
                 git config --global --add safe.directory \
                   '${esp-dev.packages.${pkgs.system}.esp-idf-esp32c3}'
@@ -75,8 +85,10 @@
                 # Build the MicroPython firmware.
                 # TODO split the various parts of the firmware into separate derivations
                 # then combine, to optimize re-compilation depending on what is updated.
-                make V=1 -C ports/esp32 BOARD=ESP32_GENERIC_C3 \
-                  FROZEN_MANIFEST="${frozenManifest}"
+                make V=1 -C ports/esp32 \
+                  BOARD=ESP32_GENERIC_C3 \
+                  FROZEN_MANIFEST="${frozenManifest}" \
+                  USER_C_MODULES="$(realpath lib/user_c_modules/micropython.cmake)"
               '';
 
               installPhase = ''
@@ -89,10 +101,13 @@
             port,
             board,
             frozenManifestText ? "",
-            # Until this issue is resolved, output must be fixed.
+            userCModules ? null,
+            # TODO Until this issue is resolved, output must be fixed.
             # https://github.com/espressif/idf-component-manager/issues/54
+            # Might need to keep it as an option even after so that manifest
+            # `require()` can be used.
             sha256 ? "",
-          }@opts:
+          }@args:
             let
             in
               pkgs.stdenv.mkDerivation (boardMkDerivationOptions.${port}.${board} {
@@ -111,7 +126,7 @@
                 outputHash = sha256;
                 outputHashAlgo = "sha256";
                 outputHashMode = "recursive";
-              } {inherit frozenManifestText;});
+              } args);
       });
     };
 }
