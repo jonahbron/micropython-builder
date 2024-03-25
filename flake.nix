@@ -132,6 +132,20 @@
                 outputHashAlgo = "sha256";
                 outputHashMode = "recursive";
               } args);
+          flashEsp32Firmware = {chip}: firmware:
+            pkgs.writeShellScriptBin "flashEsp32Firmware-${chip}" ''
+              ${pkgs.esptool}/bin/esptool.py \
+                --chip ${chip} \
+                --port /dev/ttyACM0 \
+                --baud 921600 \
+                --before default_reset \
+                --after hard_reset \
+                --no-stub write_flash \
+                --flash_mode dio \
+                --flash_freq 80m \
+                0x0 \
+                ${firmware}
+            '';
       });
     };
 }

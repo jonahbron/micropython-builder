@@ -32,6 +32,7 @@ nix build ./examples#
   - [x] Allow patch phase script
   - [ ] Allow overriding the micropython source
   - [ ] Allow overriding the micropython-lib source
+- [ ] Make interface more ergonomic, require less knowledge
 - [ ] Add nix formatter
 - [ ] Flake template
 - [ ] Contribute into nixpkgs?
