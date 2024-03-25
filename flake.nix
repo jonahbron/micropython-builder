@@ -49,9 +49,20 @@
             installPhase = "cp -r mpy-cross/build $out";
           };
         in {
-          esp32c3 = import ./ports/esp32/generic-c3.nix {
+          esp32c3-generic = import ./ports/esp32/c3-generic.nix {
             inherit pkgs esp-dev mpy-cross micropython-src micropython-lib-src berkeley-db-1_xx-src;
           };
+      });
+
+      packages = forAllSystems (pkgs: {
+        esp32c3-generic = self.lib.${pkgs.system}.esp32c3-generic.buildMicroPythonFirmware {
+          # Built on x86_64-linux
+          sha256 = "sha256-pgp40inNjT1cCX2S8/EjVTTytaK7zz8+x1sT7nWLHT0=";
+        };
+        flash-esp32c3-generic = self.lib.${pkgs.system}.esp32c3-generic.flashMicroPythonFirmware {
+          # Built on x86_64-linux
+          sha256 = "sha256-pgp40inNjT1cCX2S8/EjVTTytaK7zz8+x1sT7nWLHT0=";
+        };
       });
     };
 }
