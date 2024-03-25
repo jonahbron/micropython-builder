@@ -29,5 +29,17 @@
       userCModules = ./user_c_modules;
       sha256 = "sha256-pgp40inNjT1cCX2S8/EjVTTytaK7zz8+x1sT7nWLHT0=";
     };
+
+    # PatchPhase current directory is in the build environment, in the root of
+    # the micropython source.  Here arbitrary scripts can be run to mutate the
+    # source or libraries before build.
+    packages.x86_64-linux.withPatchPhase = micropython-builder.lib.x86_64-linux.mkFirmwareDerivation {
+      port = "esp32";
+      board = "ESP32_GENERIC_C3";
+      patchPhase = ''
+        echo 'Hello world' > text.txt
+      '';
+      sha256 = "sha256-pgp40inNjT1cCX2S8/EjVTTytaK7zz8+x1sT7nWLHT0=";
+    };
   };
 }
