@@ -1,6 +1,6 @@
 {pkgs, esp-dev, ...}@inputs:
 let
-  common = import ./. inputs;
+  common = import ./common.nix inputs;
   # TODO extract non-C3-specific expressions into ../
   buildMicroPythonFirmware = {
     frozenManifestText ? "",

@@ -14,11 +14,9 @@
           "aarch64-linux"
         ] (system: function (import nixpkgs { inherit system; }));
     in {
-      lib = forAllSystems (pkgs: {
-        esp32c3-generic = import ./ports/esp32/c3-generic.nix {
-          inherit pkgs;
-          esp-dev = esp-dev.packages.${pkgs.system};
-        };
+      lib = forAllSystems (pkgs: import ./ports {
+        inherit pkgs;
+        esp-dev = esp-dev.packages.${pkgs.system};
       });
 
       packages = forAllSystems (pkgs: {

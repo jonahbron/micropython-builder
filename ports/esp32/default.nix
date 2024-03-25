@@ -1,9 +1,3 @@
-{pkgs, ...}@inputs:
-  let
-    common = import ./../. inputs;
-  in common // {
-    frozenManifest = frozenManifestText: pkgs.writeText "manifest.py" ''
-      include("${common.micropython-src}/ports/esp32/boards/manifest.py")
-      ${frozenManifestText}
-    '';
-  }
+inputs: {
+  esp32c3-generic = import ./c3-generic.nix inputs;
+}
