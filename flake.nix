@@ -40,7 +40,7 @@
             name = "mpy-cross";
             buildInputs = [
               # Depending on nixpkgs-esp-dev to ensure same Python version.
-              # esp-dev.packages.${pkgs.system}.esp-idf-esp32c3
+              esp-dev.packages.${pkgs.system}.esp-idf-esp32c3
             ];
             src = micropython-src;
             phases = ["unpackPhase" "buildPhase" "installPhase"];
