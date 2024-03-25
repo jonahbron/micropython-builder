@@ -1,4 +1,4 @@
-{pkgs, esp-dev, mpy-cross, micropython-src, berkeley-db-1_xx-src, ...}:
+{pkgs, esp-dev, mpy-cross, micropython-src, micropython-lib-src, berkeley-db-1_xx-src, ...}:
 let
   # TODO extract non-C3-specific expressions into ../
   buildMicroPythonFirmware = {

@@ -50,7 +50,7 @@
           };
         in {
           esp32c3 = import ./ports/esp32/generic-c3.nix {
-            inherit pkgs esp-dev mpy-cross micropython-src berkeley-db-1_xx-src;
+            inherit pkgs esp-dev mpy-cross micropython-src micropython-lib-src berkeley-db-1_xx-src;
           };
       });
     };
