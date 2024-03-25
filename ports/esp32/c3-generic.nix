@@ -1,5 +1,6 @@
-{pkgs, esp-dev, mpy-cross, micropython-src, micropython-lib-src, berkeley-db-1_xx-src, ...}:
+{pkgs, esp-dev, ...}@inputs:
 let
+  common = import ./. inputs;
   # TODO extract non-C3-specific expressions into ../
   buildMicroPythonFirmware = {
     frozenManifestText ? "",
@@ -12,23 +13,19 @@ let
     sha256 ? "",
   }@args:
     let
-      frozenManifest = pkgs.writeText "manifest.py" ''
-        include("${micropython-src}/ports/esp32/boards/manifest.py")
-        ${frozenManifestText}
-      '';
     in pkgs.stdenv.mkDerivation {
       name = "esp32_generic_c3";
-      src = micropython-src;
-      nativeBuildInputs = [esp-dev.packages.${pkgs.system}.esp-idf-esp32c3];
+      src = common.micropython-src;
+      nativeBuildInputs = [esp-dev.esp-idf-esp32c3];
       phases = ["unpackPhase" "patchPhase" "buildPhase" "installPhase"];
       patchPhase = ''
         rmdir lib/micropython-lib
-        ln -s ${micropython-lib-src} lib/micropython-lib
-        ln -s ${mpy-cross} mpy-cross/build
+        ln -s ${common.micropython-lib-src} lib/micropython-lib
+        ln -s ${common.mpy-cross} mpy-cross/build
         export GIT_CONFIG_GLOBAL=$(realpath .gitconfig)
 
         rmdir lib/berkeley-db-1.xx
-        ln -s ${berkeley-db-1_xx-src} lib/berkeley-db-1.xx # Required by stdlib
+        ln -s ${common.berkeley-db-1_xx-src} lib/berkeley-db-1.xx # Required by stdlib
 
         # Included C modules must be copied in.  Referencing them
         # directly in the Store (or even symlinking them in) will leave
@@ -37,7 +34,7 @@ let
         cp -r ${userCModules} lib/user_c_modules
 
         git config --global --add safe.directory \
-          '${esp-dev.packages.${pkgs.system}.esp-idf-esp32c3}'
+          '${esp-dev.esp-idf-esp32c3}'
 
         # Additional patches specified by caller.
         ${patchPhase}
@@ -51,7 +48,7 @@ let
         # then combine, to optimize re-compilation depending on what is updated.
         make V=1 -C ports/esp32 \
           BOARD=ESP32_GENERIC_C3 \
-          FROZEN_MANIFEST="${frozenManifest}" \
+          FROZEN_MANIFEST="${common.frozenManifest frozenManifestText}" \
           USER_C_MODULES="$(realpath lib/user_c_modules/micropython.cmake)"
       '';
 
