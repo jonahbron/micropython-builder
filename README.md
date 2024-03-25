@@ -15,8 +15,9 @@ nix run github:jonahbron/micropython-builder#flash-esp32c3-generic
 >
 > [Builds fail without Internet access (IDFGH-12120) (PACMAN-808) #54][esp-idf]
 
-See [examples](./examples) for how to use this builder in your own flake.
-You can run an example builder with this command (from within the repository):
+See [examples](./examples) directory or a [real project][usage] for how to use
+this builder in your own flake. The examples are also a flake and can be run
+directly.
 
 ```bash
 nix build ./examples#
@@ -52,5 +53,6 @@ nix build ./examples#
 - [ ] Contribute into nixpkgs?
 
 [esp-idf]: https://github.com/espressif/idf-component-manager/issues/54
+[usage]: https://git.sr.ht/~jonahbron/doorbell/tree/17a3b500eadaea10a203baa3f078df4f40ce0f45/item/firmware.nix
 [esp32]: https://github.com/micropython/micropython/tree/master/ports/esp32
 [esp32c3-generic]: https://github.com/micropython/micropython/tree/master/ports/esp32/boards/ESP32_GENERIC_C3
