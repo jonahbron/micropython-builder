@@ -9,7 +9,11 @@ nix run github:jonahbron/micropython-builder#flash-esp32GenericC3
 ```
 
 See [`examples/`](./examples) for examples of usage as an input to another
-flake.
+flake.  You can run the example builder with this command:
+
+```bash
+nix build ./examples#
+```
 
 ## Currently Supported Ports/Boards
 
@@ -22,7 +26,7 @@ flake.
   - [ ] Other output portions can be accessed too `nix build .#esp32GenericC3.bootloader`
 - [ ] Flake package that can be run like `nix run .#flash-esp32GenericC3`
 - [ ] Top-level Flake output callable named like mkFirmwareDerivation
-  - [ ] Allows specifying the port/board
+  - [x] Allows specifying the port/board
   - [ ] Accepts arguments pointing to manifest.py
   - [ ] Accepts arguments pointing to user_c_modules
   - [ ] Allow patch phase script
