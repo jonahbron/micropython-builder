@@ -24,6 +24,9 @@ nix build ./examples#
 
 ## Currently Supported Ports/Boards
 
+> [!NOTE]
+> Contributions of other MicroPython ports/boards are extremely welcome!
+
 - [x] [ESP32][esp32]
   - [x] [ESP32_GENERIC_C3][esp32c3-generic]
 
@@ -45,6 +48,7 @@ nix build ./examples#
 - [ ] Factor out common ESP32 expressions
 - [ ] Add nix formatter
 - [ ] Flake template
+- [ ] GitHub Action that attempts to regularly update dependencies
 - [ ] Contribute into nixpkgs?
 
 [esp-idf]: https://github.com/espressif/idf-component-manager/issues/54
