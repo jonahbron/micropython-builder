@@ -100,7 +100,21 @@
               '';
             };
           };
-        in {
+          flashChipOptions = {
+            esp32c3 = firmwareOptions: ''
+              ${pkgs.esptool}/bin/esptool.py \
+                --chip esp32c3 \
+                --port /dev/ttyACM0 \
+                --baud 921600 \
+                --before default_reset \
+                --after hard_reset \
+                --no-stub write_flash \
+                --flash_mode dio \
+                --flash_freq 80m \
+                0x0 \
+                ${buildMicroPythonFirmware firmwareOptions}
+            '';
+          };
           buildMicroPythonFirmware = {
             port,
             board,
@@ -132,20 +146,10 @@
                 outputHashAlgo = "sha256";
                 outputHashMode = "recursive";
               } args);
-          flashEsp32Firmware = {chip}: firmware:
-            pkgs.writeShellScriptBin "flashEsp32Firmware-${chip}" ''
-              ${pkgs.esptool}/bin/esptool.py \
-                --chip ${chip} \
-                --port /dev/ttyACM0 \
-                --baud 921600 \
-                --before default_reset \
-                --after hard_reset \
-                --no-stub write_flash \
-                --flash_mode dio \
-                --flash_freq 80m \
-                0x0 \
-                ${firmware}
-            '';
+        in {
+          inherit buildMicroPythonFirmware;
+          flashMicroPythonFirmware = firmwareOptions: {chip}:
+            pkgs.writeShellScriptBin "flashMicroPythonFirmware-${chip}" (flashChipOptions.${chip} firmwareOptions);
       });
     };
 }
