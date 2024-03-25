@@ -54,7 +54,7 @@
             let
               frozenManifest = pkgs.writeText "manifest.py" ''
                 include("${micropython-src}/ports/esp32/boards/manifest.py")
-                ${(builtins.traceVal args).frozenManifestText}
+                ${args.frozenManifestText}
               '';
             in opts // {
               name = "esp32_generic_c3";
