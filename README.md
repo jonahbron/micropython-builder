@@ -15,8 +15,8 @@ nix run github:jonahbron/micropython-builder#flash-esp32c3-generic
 >
 > [Builds fail without Internet access (IDFGH-12120) (PACMAN-808) #54][esp-idf]
 
-See [`examples/`](./examples) for examples of usage as an input to another
-flake.  You can run the example builder with this command:
+See [examples](./examples) for how to use this builder in your own flake.
+You can run an example builder with this command (from within the repository):
 
 ```bash
 nix build ./examples#
