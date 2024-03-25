@@ -16,6 +16,7 @@
     in {
       lib = forAllSystems (pkgs:
         let
+          # Pull in all univesrally required sources.
           berkeley-db-1_xx-src = pkgs.fetchFromGitHub {
             owner = "pfalcon";
             repo = "berkeley-db-1.xx";
@@ -45,111 +46,12 @@
             src = micropython-src;
             phases = ["unpackPhase" "buildPhase" "installPhase"];
             buildPhase = "make V=1 -C mpy-cross";
-            installPhase = ''
-              cp -r mpy-cross/build $out
-            '';
+            installPhase = "cp -r mpy-cross/build $out";
           };
-          boardMkDerivationOptions = {
-            esp32.ESP32_GENERIC_C3 = opts: {
-              frozenManifestText ? "",
-              userCModules ? pkgs.writeTextDir "micropython.cmake" "",
-              patchPhase ? "",
-              ...
-            }:
-            let
-              frozenManifest = pkgs.writeText "manifest.py" ''
-                include("${micropython-src}/ports/esp32/boards/manifest.py")
-                ${frozenManifestText}
-              '';
-            in opts // {
-              name = "esp32_generic_c3";
-              nativeBuildInputs = [esp-dev.packages.${pkgs.system}.esp-idf-esp32c3];
-              patchPhase = ''
-                ${opts.patchPhase}
-
-                rmdir lib/berkeley-db-1.xx
-                ln -s ${berkeley-db-1_xx-src} lib/berkeley-db-1.xx # Required by stdlib
-
-                # Included C modules must be copied in.  Referencing them
-                # directly in the Store (or even symlinking them in) will leave
-                # stray Store paths in the output binary, which is illegal for
-                # fixed-output derivations.
-                cp -r ${userCModules} lib/user_c_modules
-
-                git config --global --add safe.directory \
-                  '${esp-dev.packages.${pkgs.system}.esp-idf-esp32c3}'
-
-                # Additional patches specified by caller.
-                ${patchPhase}
-              '';
-
-              buildPhase = ''
-                ${opts.buildPhase}
-
-                # Build the MicroPython firmware.
-                # TODO split the various parts of the firmware into separate derivations
-                # then combine, to optimize re-compilation depending on what is updated.
-                make V=1 -C ports/esp32 \
-                  BOARD=ESP32_GENERIC_C3 \
-                  FROZEN_MANIFEST="${frozenManifest}" \
-                  USER_C_MODULES="$(realpath lib/user_c_modules/micropython.cmake)"
-              '';
-
-              installPhase = ''
-                cp ports/esp32/build-ESP32_GENERIC_C3/firmware.bin $out
-              '';
-            };
-          };
-          flashChipOptions = {
-            esp32c3 = firmwareOptions: ''
-              ${pkgs.esptool}/bin/esptool.py \
-                --chip esp32c3 \
-                --port /dev/ttyACM0 \
-                --baud 921600 \
-                --before default_reset \
-                --after hard_reset \
-                --no-stub write_flash \
-                --flash_mode dio \
-                --flash_freq 80m \
-                0x0 \
-                ${buildMicroPythonFirmware firmwareOptions}
-            '';
-          };
-          buildMicroPythonFirmware = {
-            port,
-            board,
-            frozenManifestText ? "",
-            userCModules ? null,
-            patchPhase ? "",
-            # TODO Until this issue is resolved, output must be fixed.
-            # https://github.com/espressif/idf-component-manager/issues/54
-            # Might need to keep it as an option even after so that manifest
-            # `require()` can be used.
-            sha256 ? "",
-          }@args:
-            let
-            in
-              pkgs.stdenv.mkDerivation (boardMkDerivationOptions.${port}.${board} {
-                src = micropython-src;
-                phases = ["unpackPhase" "patchPhase" "buildPhase" "installPhase"];
-                patchPhase = ''
-                  rmdir lib/micropython-lib
-                  ln -s ${micropython-lib-src} lib/micropython-lib
-                  ln -s ${mpy-cross} mpy-cross/build
-                  export GIT_CONFIG_GLOBAL=$(realpath .gitconfig)
-                '';
-
-                buildPhase = ''
-                  export HOME=$(pwd)
-                '';
-                outputHash = sha256;
-                outputHashAlgo = "sha256";
-                outputHashMode = "recursive";
-              } args);
         in {
-          inherit buildMicroPythonFirmware;
-          flashMicroPythonFirmware = firmwareOptions: {chip}:
-            pkgs.writeShellScriptBin "flashMicroPythonFirmware-${chip}" (flashChipOptions.${chip} firmwareOptions);
+          esp32c3 = import ./ports/esp32/generic-c3.nix {
+            inherit pkgs esp-dev mpy-cross micropython-src berkeley-db-1_xx-src;
+          };
       });
     };
 }
