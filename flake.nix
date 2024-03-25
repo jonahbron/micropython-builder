@@ -53,6 +53,7 @@
             esp32.ESP32_GENERIC_C3 = opts: {
               frozenManifestText ? "",
               userCModules ? pkgs.writeTextDir "micropython.cmake" "",
+              patchPhase ? "",
               ...
             }:
             let
@@ -77,6 +78,9 @@
 
                 git config --global --add safe.directory \
                   '${esp-dev.packages.${pkgs.system}.esp-idf-esp32c3}'
+
+                # Additional patches specified by caller.
+                ${patchPhase}
               '';
 
               buildPhase = ''
@@ -102,6 +106,7 @@
             board,
             frozenManifestText ? "",
             userCModules ? null,
+            patchPhase ? "",
             # TODO Until this issue is resolved, output must be fixed.
             # https://github.com/espressif/idf-component-manager/issues/54
             # Might need to keep it as an option even after so that manifest
