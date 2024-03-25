@@ -54,7 +54,7 @@
             let
               frozenManifest = pkgs.writeText "manifest.py" ''
                 include("${micropython-src}/ports/esp32/boards/manifest.py")
-                ${(pkgs.lib.debug.traceVal args).frozenManifestText}
+                ${(builtins.traceVal args).frozenManifestText}
               '';
             in opts // {
               name = "esp32_generic_c3";
@@ -111,7 +111,7 @@
                 outputHash = sha256;
                 outputHashAlgo = "sha256";
                 outputHashMode = "recursive";
-              } (pkgs.lib.debug.traceVal opts));
+              } {inherit frozenManifestText;});
       });
     };
 }
