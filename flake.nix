@@ -50,7 +50,13 @@
             '';
           };
           boardMkDerivationOptions = {
-            esp32.ESP32_GENERIC_C3 = opts: opts // {
+            esp32.ESP32_GENERIC_C3 = opts: args:
+            let
+              frozenManifest = pkgs.writeText "manifest.py" ''
+                include("${micropython-src}/ports/esp32/boards/manifest.py")
+                ${args.frozenManifestText}
+              '';
+            in opts // {
               name = "esp32_generic_c3";
               nativeBuildInputs = [esp-dev.packages.${pkgs.system}.esp-idf-esp32c3];
               patchPhase = ''
@@ -69,7 +75,8 @@
                 # Build the MicroPython firmware.
                 # TODO split the various parts of the firmware into separate derivations
                 # then combine, to optimize re-compilation depending on what is updated.
-                make V=1 -C ports/esp32 BOARD=ESP32_GENERIC_C3
+                make V=1 -C ports/esp32 BOARD=ESP32_GENERIC_C3 \
+                  FROZEN_MANIFEST="${frozenManifest}"
               '';
 
               installPhase = ''
@@ -81,10 +88,11 @@
           mkFirmwareDerivation = {
             port,
             board,
+            frozenManifestText ? "",
             # Until this issue is resolved, output must be fixed.
             # https://github.com/espressif/idf-component-manager/issues/54
             sha256 ? "",
-          }:
+          }@opts:
             let
             in
               pkgs.stdenv.mkDerivation (boardMkDerivationOptions.${port}.${board} {
@@ -103,7 +111,7 @@
                 outputHash = sha256;
                 outputHashAlgo = "sha256";
                 outputHashMode = "recursive";
-              });
+              } opts);
       });
     };
 }
