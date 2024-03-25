@@ -44,11 +44,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1711336648,
-        "narHash": "sha256-RPou847r5lOlm84w1M0mnD5CuIq9Pmc3aituvNxxgKw=",
+        "lastModified": 1711339366,
+        "narHash": "sha256-HQUEhOs4avOETz/Emeo1AZGjbqrY3pVXOmB/nYM/+jo=",
         "owner": "jonahbron",
         "repo": "micropython-builder",
-        "rev": "9b60b58373a1b5af22de5b23892a8e438055bcbc",
+        "rev": "c067ce2c827b09453da3421f032a07d4d1845555",
         "type": "github"
       },
       "original": {
