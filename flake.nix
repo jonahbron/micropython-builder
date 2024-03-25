@@ -101,7 +101,7 @@
             };
           };
         in {
-          mkFirmwareDerivation = {
+          buildMicroPythonFirmware = {
             port,
             board,
             frozenManifestText ? "",

@@ -17,20 +17,22 @@ nix build ./examples#
 
 ## Currently Supported Ports/Boards
 
-- [ ] [ESP32](https://github.com/micropython/micropython/tree/master/ports/esp32) 
-  - [ ] [ESP32_GENERIC_C3](https://github.com/micropython/micropython/tree/master/ports/esp32/boards/ESP32_GENERIC_C3)
+- [x] [ESP32](https://github.com/micropython/micropython/tree/master/ports/esp32)
+  - [x] [ESP32_GENERIC_C3](https://github.com/micropython/micropython/tree/master/ports/esp32/boards/ESP32_GENERIC_C3)
 
 ## TODO
 - [ ] Flake package that can be run like `nix build .#esp32GenericC3`
   - [ ] Default output is firmware.bin
   - [ ] Other output portions can be accessed too `nix build .#esp32GenericC3.bootloader`
 - [ ] Flake package that can be run like `nix run .#flash-esp32GenericC3`
-- [ ] Top-level Flake output callable named like mkFirmwareDerivation
+- [x] Top-level Flake output callable named like buildMicroPythonFirmware
   - [x] Allows specifying the port/board
-  - [ ] Accepts arguments pointing to manifest.py
-  - [ ] Accepts arguments pointing to user_c_modules
-  - [ ] Allow patch phase script
+  - [x] Accepts arguments pointing to manifest.py
+  - [x] Accepts arguments pointing to user_c_modules
+  - [x] Allow patch phase script
   - [ ] Allow overriding the micropython source
   - [ ] Allow overriding the micropython-lib source
+- [ ] Add nix formatter
+- [ ] Flake template
 - [ ] Contribute into nixpkgs?
 
