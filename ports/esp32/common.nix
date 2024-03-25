@@ -42,9 +42,9 @@
       '';
     flashMicroPythonFirmware = {chip, buildMicroPythonFirmware}: firmwareOptions:
       pkgs.writeShellScriptBin "flash-micropython" ''
+        # TODO port accept as argument somehow
         ${pkgs.esptool}/bin/esptool.py \
           --chip ${chip} \
-          # TODO accept as argument somehow
           --port /dev/ttyACM0 \
           --baud 921600 \
           --before default_reset \
