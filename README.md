@@ -47,6 +47,7 @@ nix build ./examples#
 - [x] Make interface more ergonomic, require less knowledge
 - [ ] Make fixed-output derivations optional
 - [ ] Factor out common ESP32 expressions
+- [ ] Allow generating firmware with LittleFS partitions/other partition table customizations
 - [ ] Add nix formatter
 - [ ] Flake template
 - [ ] GitHub Action that attempts to regularly update dependencies
